@@ -150,7 +150,7 @@
   <div id="results"></div>
 
   <script>
-    const API_BASE_URL = "https://script.google.com/macros/s/AKfycbxEmslySo2fdJW79ShBlUU_5Usf8j0rMAjPY4IWTFaCiHX24trkTkeCqLuhwQX32sEiZg/exec";
+    const API_BASE_URL = "https://script.google.com/macros/s/AKfycbys-XfS77gCV9KG5feQmEl0NaRw6rqhMO1MgBmxRkAgRDajcpivhUX0IJtFm0Vcn01xpA/exec";
 
     let allOptions = {};
     let liffInitialized = false;
@@ -293,19 +293,19 @@
             <div class="card" data-photo="${car.照片 || ''}">
               <h3>${car.廠牌} ${car.車型}</h3>
               <p>年份：${car.年份}｜顏色：${car.顏色}</p>
-              <p>開價：${car.開價} 元｜里程數：${car.里程數} km</p>
+              <p>開價：${car.開價} 萬｜里程數：${car.里程數} </p>
               <p>車牌：${car.車牌 || '無'}</p>
-
+              <p>店區：${car.來源 || '無'}</p>
                <div class="btn-group">
-                ${car.照片 ? `
-                <button onclick="sendCarPhotos(this)">📷 發送車照訊息</button>
-                ` : `
-                  <button disabled>❌ 無車照</button>
-                `}
-                <button onclick="copyInfo('${car.廠牌}', '${car.車型}', '${car.開價}')">
-                  📤 分享
-                </button>
-              </div>
+                 ${car.照片 ? `
+                 <button onclick="sendCarPhotos(this)">📷 發送車照訊息</button>
+                 ` : `
+                   <button disabled>❌ 無車照</button>
+                 `}
+                 <button onclick="copyInfo('${car.廠牌}', '${car.車型}', '${car.開價}')">
+                   📤 分享
+                 </button>
+               </div>
             </div>`;
         });
     }
