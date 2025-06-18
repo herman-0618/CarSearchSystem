@@ -283,7 +283,7 @@ p {
     }
 
     function resetFilters() {
-      ["brand", "model", "year", "color"].forEach(id => document.getElementById(id).value = "");
+      ["keyword","brand", "model", "year", "color"].forEach(id => document.getElementById(id).value = "");
       updateFilters();
       document.getElementById("results").innerHTML = "";
     }
