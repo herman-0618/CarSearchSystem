@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>車輛查詢系統</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      padding: 2rem 1.5rem;
+      background: #f9f9f9;
+      font-size: 28px;
+      line-height: 1.6;
+      color: #222;
+    }
+    /* 省略之前CSS，跟你一模一樣 */
+    label {
+      display: block;
+      margin: 2rem 0 1rem;
+      font-weight: 700;
+      font-size: 1.7rem;
+    }
+    select,
+    button {
+      width: 100%;
+      font-size: 1.7rem;
+      padding: 1.4rem 1.6rem;
+      border-radius: 18px;
+      border: 3px solid #999;
+      box-sizing: border-box;
+      cursor: pointer;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+      user-select: none;
+      line-height: 1.4;
+    }
+    select {
+      padding-right: 3rem;
+      appearance: none;
+    }
+    select:focus,
+    button:focus {
+      outline: none;
+      border-color: #005ea2;
+      background-color: #d6e4ff;
+    }
+    button {
+      margin: 2rem 0 2.5rem;
+      background-color: #0078d7;
+      color: white;
+      font-weight: 900;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:hover {
+      background-color: #005ea2;
+    }
+    .card {
+      background: white;
+      border-radius: 22px;
+      padding: 2.5rem 2rem;
+      margin: 2.5rem 0;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+    .car-img {
+      width: 100%;
+      border-radius: 16px;
+      margin-bottom: 2rem;
+      object-fit: cover;
+      max-height: 240px;
+    }
+    h2 {
+      font-size: 3.2rem;
+      margin-bottom: 2rem;
+      font-weight: 900;
+      color: #0078d7;
+    }
+    h3 {
+      font-size: 2rem;
+      margin: 0 0 1rem 0;
+      font-weight: 800;
+      color: #222;
+    }
+    p {
+      font-size: 1.6rem;
+      margin: 0.6rem 0;
+      color: #444;
+    }
+    .btn-group {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1.5rem;
+    }
+    .btn-group button {
+      flex: 1;
+      font-size: 1.5rem;
+      padding: 1.2rem 0;
+      border-radius: 16px;
+      height: auto;
+    }
+    @media (max-width: 480px) {
+      body {
+        font-size: 26px;
+        padding: 1.5rem 1rem;
+      }
+      h2 {
+        font-size: 2.8rem;
+      }
+      h3 {
+        font-size: 1.8rem;
+      }
+      p {
+        font-size: 1.4rem;
+      }
+      select,
+      button {
+        font-size: 1.5rem;
+        padding: 1.3rem 1.4rem;
+      }
+      .btn-group button {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+   <!-- 引入 LINE LIFF SDK -->
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+
+<body>
+  <h2>🔍 車輛查詢系統</h2>
+
+  <div>
+    <label>廠牌</label>
+    <select id="brand" onchange="updateFilters()"></select>
+
+    <label>車型</label>
+    <select id="model" onchange="updateFilters()"></select>
+
+    <label>年份</label>
+    <select id="year" onchange="updateFilters()"></select>
+
+    <label>顏色</label>
+    <select id="color"></select>
+
+    <button onclick="search()">✅ 查詢</button>
+    <button onclick="resetFilters()">🔄 重設條件</button>
+  </div>
+
+  <div id="results"></div>
+
+  <script>
+    let allOptions = {};
+    let liffInitialized = false;
+
+    async function initializeLiff() {
+      try {
+        await liff.init({ liffId: "2007299608-nMxK4xJ1" }); // 請換成你的 LIFF ID
+        liffInitialized = true;
+        console.log("LIFF 初始化成功");
+      } catch (error) {
+        alert("LIFF 初始化失敗：" + error.message);
+      }
+    }
+
+    window.onload = () => {
+      initializeLiff();
+
+      google.script.run.withSuccessHandler(data => {
+        allOptions = data;
+        updateFilters();
+      }).取得車輛條件樹();
+    };
+
+    function updateFilters() {
+      const brand = document.getElementById("brand").value;
+      const model = document.getElementById("model").value;
+      const year = document.getElementById("year").value;
+
+      const brandSel = document.getElementById("brand");
+      const modelSel = document.getElementById("model");
+      const yearSel = document.getElementById("year");
+      const colorSel = document.getElementById("color");
+
+      // 更新廠牌選項
+      brandSel.innerHTML = `<option value="">--廠牌--</option>`;
+      Object.keys(allOptions).forEach(b => {
+        brandSel.innerHTML += `<option value="${b}" ${b === brand ? "selected" : ""}>${b}</option>`;
+      });
+
+      // 更新車型選項
+      modelSel.innerHTML = `<option value="">--車型--</option>`;
+      if (brand && allOptions[brand]) {
+        Object.keys(allOptions[brand]).forEach(m => {
+          modelSel.innerHTML += `<option value="${m}" ${m === model ? "selected" : ""}>${m}</option>`;
+        });
+      }
+
+      // 更新年份選項
+      yearSel.innerHTML = `<option value="">--年份--</option>`;
+      if (brand && model && allOptions[brand]?.[model]) {
+        Object.keys(allOptions[brand][model]).forEach(y => {
+          yearSel.innerHTML += `<option value="${y}" ${y === year ? "selected" : ""}>${y}</option>`;
+        });
+      }
+
+      // 更新顏色選項
+      colorSel.innerHTML = `<option value="">--顏色--</option>`;
+      if (brand && model && year && allOptions[brand]?.[model]?.[year]) {
+        allOptions[brand][model][year].forEach(color => {
+          colorSel.innerHTML += `<option value="${color}">${color}</option>`;
+        });
+      }
+    }
+
+    function resetFilters() {
+      ["brand", "model", "year", "color"].forEach(id => document.getElementById(id).value = "");
+      updateFilters();
+      document.getElementById("results").innerHTML = "";
+    }
+
+    function search() {
+      const filters = {
+        廠牌: document.getElementById("brand").value,
+        車型: document.getElementById("model").value,
+        年份: document.getElementById("year").value,
+        顏色: document.getElementById("color").value,
+      };
+
+      google.script.run.withSuccessHandler(renderResults).查詢車輛(filters);
+    }
+
+    function renderResults(cars) {
+      const container = document.getElementById("results");
+      container.innerHTML = "";
+
+      if (cars.length === 0) {
+        container.innerHTML = "<p>未找到符合條件的車輛。</p>";
+        return;
+      }
+
+      cars.forEach(car => {
+        container.innerHTML += `
+          <div class="card" data-photo="${car.照片 || ''}">
+            <h3>${car.廠牌} ${car.車型}</h3>
+            <p>年份：${car.年份}｜顏色：${car.顏色}</p>
+            <p>開價：${car.開價} 元｜里程數：${car.里程數} km</p>
+
+            <div class="btn-group">
+              ${car.照片 ? `
+                <button onclick="sendCarPhotos(this)">📷 發送車照訊息</button>
+              ` : `
+                <button disabled>❌ 無車照</button>
+              `}
+              <button onclick="copyInfo('${car.廠牌}', '${car.車型}', '${car.開價}')">
+                📤 分享
+              </button>
+            </div>
+
+            <p style="color:red; font-size:12px; margin-top:1rem;">
+              車照ID: ${car.照片 || '無'}
+            </p>
+          </div>`;
+      });
+    }
+
+    async function sendCarPhotos(btn) {
+      const card = btn.closest('.card');
+      const photoId = card?.dataset.photo;
+      if (!photoId) {
+        alert("找不到車照 ID");
+        return;
+      }
+
+      const message = `#車照 ${photoId}`;
+
+      if (!liffInitialized) {
+        alert("LIFF 尚未初始化完成，請稍後再試");
+        return;
+      }
+
+      if (liff.isInClient()) {
+        try {
+          await liff.sendMessages([{ type: 'text', text: message }]);
+          alert("已發送車照訊息到聊天室！");
+        } catch (error) {
+          alert("發送失敗：" + error.message);
+        }
+      } else {
+        alert("請從 LINE APP 中打開此頁面，才能直接發送訊息");
+      }
+    }
+
+    function copyInfo(brand, model, price) {
+      const text = `${brand} ${model}，售價：${price}元`;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("已複製分享資訊到剪貼簿");
+      }).catch(() => {
+        alert("複製失敗，請手動複製");
+      });
+    }
+  </script>
+</body>
+</html>
