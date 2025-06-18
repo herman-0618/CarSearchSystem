@@ -13,7 +13,6 @@
       line-height: 1.6;
       color: #222;
     }
-    /* 省略之前CSS，跟你一模一樣 */
     label {
       display: block;
       margin: 2rem 0 1rem;
@@ -120,12 +119,13 @@
       }
     }
   </style>
-   <!-- 引入 LINE LIFF SDK -->
+  <!-- 引入 LINE LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 
 <body>
   <h2>🔍 車輛查詢系統</h2>
+  <p id="status" style="color: green; font-size: 1.5rem; margin-top: 0.5rem;"></p>
 
   <div>
     <label>廠牌</label>
@@ -151,12 +151,15 @@
     let liffInitialized = false;
 
     async function initializeLiff() {
+      const statusEl = document.getElementById("status");
       try {
-        await liff.init({ liffId: "2007299608-nMxK4xJ1" }); // 請換成你的 LIFF ID
+        await liff.init({ liffId: "2007299608-nMxK4xJ1" }); // 替換成你的 LIFF ID
         liffInitialized = true;
-        console.log("LIFF 初始化成功");
+        statusEl.style.color = "green";
+        statusEl.textContent = "✅ LIFF 初始化成功";
       } catch (error) {
-        alert("LIFF 初始化失敗：" + error.message);
+        statusEl.style.color = "red";
+        statusEl.textContent = "❌ LIFF 初始化失敗：" + error.message;
       }
     }
 
@@ -179,13 +182,11 @@
       const yearSel = document.getElementById("year");
       const colorSel = document.getElementById("color");
 
-      // 更新廠牌選項
       brandSel.innerHTML = `<option value="">--廠牌--</option>`;
       Object.keys(allOptions).forEach(b => {
         brandSel.innerHTML += `<option value="${b}" ${b === brand ? "selected" : ""}>${b}</option>`;
       });
 
-      // 更新車型選項
       modelSel.innerHTML = `<option value="">--車型--</option>`;
       if (brand && allOptions[brand]) {
         Object.keys(allOptions[brand]).forEach(m => {
@@ -193,7 +194,6 @@
         });
       }
 
-      // 更新年份選項
       yearSel.innerHTML = `<option value="">--年份--</option>`;
       if (brand && model && allOptions[brand]?.[model]) {
         Object.keys(allOptions[brand][model]).forEach(y => {
@@ -201,7 +201,6 @@
         });
       }
 
-      // 更新顏色選項
       colorSel.innerHTML = `<option value="">--顏色--</option>`;
       if (brand && model && year && allOptions[brand]?.[model]?.[year]) {
         allOptions[brand][model][year].forEach(color => {
