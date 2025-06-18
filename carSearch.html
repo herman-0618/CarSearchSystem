@@ -147,7 +147,7 @@
   <div id="results"></div>
 
   <script>
-    const API_BASE_URL = "https://script.google.com/macros/s/AKfycbx4A42GL5R6d_AkrMDgjsfpoZgb1qv_ruTfhqwOTO9S_QINVbmzNGNV2E1z4NdazYJC1Q/exec";
+    const API_BASE_URL = "https://script.google.com/macros/s/AKfycbzNF-onwLQA8lwrP0cQ2l5tFFs7eIRNZZEwdwicJmUUkKMays_vcnGLcz4aAc_3z3Hwhg/exec";
 
     let allOptions = {};
     let liffInitialized = false;
@@ -254,25 +254,23 @@
         顏色: document.getElementById("color").value,
       };
 
-      const userId = window.userInfo?.userId || sessionStorage.getItem("userId") || null;
+      const userId = window.userInfo?.userId || sessionStorage.getItem("userId") || '';
 
-      const payload = {
-        action: "searchCars",
-        filters: filters,
-        userId: userId, // 傳送 userId 到後端
-      };
-
+      const formData = new FormData();
+      formData.append("action", "searchCars");
+      formData.append("userId", userId);
+      formData.append("filters", JSON.stringify(filters)); // 將物件轉為字串
+    
       fetch(API_BASE_URL, {
         method: "POST",
-        body: JSON.stringify(payload),
-        headers: { "Content-Type": "application/json" },
+        body: formData,
       })
         .then(res => {
           if (!res.ok) throw new Error("查詢失敗：" + res.status);
           return res.json();
         })
         .then(renderResults)
-        .catch(err => {
+    .catch(err => {
           alert("查詢錯誤：" + err.message);
         });
     }
