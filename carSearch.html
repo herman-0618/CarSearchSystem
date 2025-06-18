@@ -128,6 +128,9 @@
   <p id="status" style="color: green; font-size: 1.5rem; margin-top: 0.5rem;"></p>
 
   <div>
+    <label>關鍵字：</label>
+    <input type="text" id="keyword" placeholder="廠牌、顏色、年份…等">
+
     <label>廠牌</label>
     <select id="brand" onchange="updateFilters()"></select>
 
@@ -147,7 +150,7 @@
   <div id="results"></div>
 
   <script>
-    const API_BASE_URL = "https://script.google.com/macros/s/AKfycbzNF-onwLQA8lwrP0cQ2l5tFFs7eIRNZZEwdwicJmUUkKMays_vcnGLcz4aAc_3z3Hwhg/exec";
+    const API_BASE_URL = "https://script.google.com/macros/s/AKfycbxEmslySo2fdJW79ShBlUU_5Usf8j0rMAjPY4IWTFaCiHX24trkTkeCqLuhwQX32sEiZg/exec";
 
     let allOptions = {};
     let liffInitialized = false;
@@ -252,6 +255,7 @@
         車型: document.getElementById("model").value,
         年份: document.getElementById("year").value,
         顏色: document.getElementById("color").value,
+        關鍵字: document.getElementById("keyword").value
       };
 
       const userId = window.userInfo?.userId || sessionStorage.getItem("userId") || '';
@@ -276,37 +280,34 @@
     }
 
     function renderResults(cars) {
-      const container = document.getElementById("results");
-      container.innerHTML = "";
+        const container = document.getElementById("results");
+        container.innerHTML = "";
 
-      if (cars.length === 0) {
-        container.innerHTML = "<p>未找到符合條件的車輛。</p>";
-        return;
-      }
+        if (cars.length === 0) {
+          container.innerHTML = "<p>未找到符合條件的車輛。</p>";
+          return;
+        }
 
-      cars.forEach(car => {
-        container.innerHTML += `
-          <div class="card" data-photo="${car.照片 || ''}">
-            <h3>${car.廠牌} ${car.車型}</h3>
-            <p>年份：${car.年份}｜顏色：${car.顏色}</p>
-            <p>開價：${car.開價} 元｜里程數：${car.里程數} km</p>
+        cars.forEach(car => {
+          container.innerHTML += `
+            <div class="card" data-photo="${car.照片 || ''}">
+              <h3>${car.廠牌} ${car.車型}</h3>
+              <p>年份：${car.年份}｜顏色：${car.顏色}</p>
+              <p>開價：${car.開價} 元｜里程數：${car.里程數} km</p>
+              <p>車牌：${car.車牌 || '無'}</p>
 
-            <div class="btn-group">
-              ${car.照片 ? `
+               <div class="btn-group">
+                ${car.照片 ? `
                 <button onclick="sendCarPhotos(this)">📷 發送車照訊息</button>
-              ` : `
-                <button disabled>❌ 無車照</button>
-              `}
-              <button onclick="copyInfo('${car.廠牌}', '${car.車型}', '${car.開價}')">
-                📤 分享
-              </button>
-            </div>
-
-            <p style="color:red; font-size:12px; margin-top:1rem;">
-              車照ID: ${car.照片 || '無'}
-            </p>
-          </div>`;
-      });
+                ` : `
+                  <button disabled>❌ 無車照</button>
+                `}
+                <button onclick="copyInfo('${car.廠牌}', '${car.車型}', '${car.開價}')">
+                  📤 分享
+                </button>
+              </div>
+            </div>`;
+        });
     }
 
     async function sendCarPhotos(btn) {
