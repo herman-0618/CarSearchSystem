@@ -147,6 +147,8 @@
   <div id="results"></div>
 
   <script>
+    const API_BASE_URL = "https://script.google.com/macros/s/AKfycbz3Ws1zvc0IdKUE3sW-erbBjkt6-OksiVR4XCoUsIs9Rqr23kaBxyGJvhhpDvurO_i3bQ/exec";
+
     let allOptions = {};
     let liffInitialized = false;
 
@@ -166,11 +168,23 @@
     window.onload = () => {
       initializeLiff();
 
-      google.script.run.withSuccessHandler(data => {
-        allOptions = data;
-        updateFilters();
-      }).取得車輛條件樹();
+      fetch(`${API_BASE_URL}?action=getTree`)
+        .then(response => {
+          if (!response.ok) throw new Error("網路回應錯誤：" + response.status);
+          return response.json();
+        })
+        .then(data => {
+          allOptions = data;
+          updateFilters();
+        })
+        .catch(err => {
+          console.error("🚨 載入車輛條件資料失敗：", err);
+          document.getElementById("results").innerHTML = `
+            <p style="color:red;">❌ 無法載入車輛條件，請稍後再試</p>
+          `;
+        });
     };
+
 
     function updateFilters() {
       const brand = document.getElementById("brand").value;
