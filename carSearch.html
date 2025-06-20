@@ -341,9 +341,7 @@ p {
                  ` : `
                    <button disabled>❌ 無車照</button>
                  `}
-                 <button onclick="copyInfo('${car.廠牌}', '${car.車型}', '${car.開價}')">
-                   📤 分享
-                 </button>
+                 <button onclick="copyInfoFromCard(this)">📤 分享</button>
                </div>
             </div>`;
         });
@@ -376,13 +374,25 @@ p {
       }
     }
 
-    function copyInfo(brand, model, price) {
-      const text = `${brand} ${model}，售價：${price}元`;
-      navigator.clipboard.writeText(text).then(() => {
-        alert("已複製分享資訊到剪貼簿");
-      }).catch(() => {
-        alert("複製失敗，請手動複製");
-      });
+    function copyInfoFromCard(btn) {
+        const card = btn.closest(".card");
+        if (!card) {
+          alert("找不到車輛卡片內容");
+          return;
+        }
+
+        // 擷取卡片內文字內容，去除多餘空白
+        const text = Array.from(card.querySelectorAll("h3, p"))
+          .map(el => el.textContent.trim())
+          .join("\n");
+
+        navigator.clipboard.writeText(text)
+          .then(() => {
+            alert("已複製車輛資訊到剪貼簿");
+          })
+          .catch(() => {
+            alert("複製失敗，請手動複製");
+          });
     }
   </script>
 </body>
