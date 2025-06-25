@@ -323,7 +323,7 @@ p {
         container.innerHTML = "";
 
         if (cars.length === 0) {
-          container.innerHTML = "<p>未找到符合條件的車輛。</p>";
+          container.innerHTML = "<h2>未找到符合條件的車輛。</h2>";
           return;
         }
 
@@ -332,7 +332,8 @@ p {
               <div class="card" data-photo="${car.照片 || ''}">
                 <h3>${car.廠牌} ${car.車型}</h3>
                 <p>年份：${car.年份 || '無'}｜顏色：${car.顏色 || '無'}</p>
-                <p>排氣量：${car.排氣量 ? car.排氣量 + 'c.c' : '無'}｜稅況：${car.稅況 || '無'}</p>
+                <p>排氣量：${car.排氣量 ? car.排氣量 + 'c.c' : '無'}</p>
+                <p>稅況：${car.稅況 || '無'}</p>
                 <p>里程數：${car.里程數 || '無'}</p>
                 <p>開價：${car.開價 ? car.開價 + '萬' : '無'}｜獎金：${car.獎金 ? car.獎金 + '萬' : '無'}</p>
                 <p>新車價：${car.新車價 ? car.新車價 + '萬' : '無'}｜認證：${car.認證 || '無'}</p>
