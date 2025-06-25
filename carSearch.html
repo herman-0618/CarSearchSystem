@@ -318,41 +318,43 @@ p {
         });
     }
 
-    function renderResults(cars) {
-        const container = document.getElementById("results");
-        container.innerHTML = "";
+   function renderResults(cars) {
+  const container = document.getElementById("results");
+  container.innerHTML = "";
 
-        if (cars.length === 0) {
-          container.innerHTML = "<h2>未找到符合條件的車輛。</h2>";
-          return;
-        }
+  if (cars.length === 0) {
+    container.innerHTML = "<h2>未找到符合條件的車輛。</h2>";
+    return;
+  }
 
-        cars.forEach(car => {
-            container.innerHTML += `
-              <div class="card" data-photo="${car.照片 || ''}">
-                <h3>${car.廠牌} ${car.車型}</h3>
-                <p>年份：${car.年份 || '無'}｜顏色：${car.顏色 || '無'}</p>
-                <p>排氣量：${car.排氣量 ? car.排氣量 + 'c.c' : '無'}</p>
-                <p>稅況：${car.稅況 || '無'}</p>
-                <p>里程數：${car.里程數 || '無'}</p>
-                <p>開價：${car.開價 ? car.開價 + '萬' : '無'}｜獎金：${car.獎金 ? car.獎金 + '萬' : '無'}</p>
-                <p>新車價：${car.新車價 ? car.新車價 + '萬' : '無'}</p>
-                <p>認證：${car.認證 || '無'}</p>
-                <p>資料齊全：${car.資料齊全 || '無'}</p>
-                <p>車牌：${car.車牌 || '無'}</p>
-                <p>店區：${car.店區 || '無'}</p>
-                <div class="btn-group">
-                  ${car.照片 ? `
-                    <button onclick="sendCarPhotos(this)">📷 發送車照訊息</button>
-                  ` : `
-                    <button disabled>❌ 無車照</button>
-                  `}
-                  <button onclick="copyInfoFromCard(this)">📤 分享</button>
-                </div>
-              </div>`;
-        });
+  let html = "";
 
-    }
+  cars.forEach(car => {
+    html += `
+      <div class="card" data-photo="${car.照片 || ''}">
+        <h3>${car.廠牌} ${car.車型}</h3>
+        <p>年份：${car.年份 || '無'}｜顏色：${car.顏色 || '無'}</p>
+        <p>排氣量：${car.排氣量 ? car.排氣量 + 'c.c' : '無'}</p>
+        <p>稅況：${car.稅況 || '無'}</p>
+        <p>里程數：${car.里程數 || '無'}</p>
+        <p>開價：${car.開價 ? car.開價 + '萬' : '無'}｜獎金：${car.獎金 ? car.獎金 + '萬' : '無'}</p>
+        <p>新車價：${car.新車價 ? car.新車價 + '萬' : '無'}</p>
+        <p>認證：${car.認證 || '無'}</p>
+        <p>資料齊全：${car.資料齊全 || '無'}</p>
+        <p>車牌：${car.車牌 || '無'}</p>
+        <p>店區：${car.店區 || '無'}</p>
+        <div class="btn-group">
+          ${car.照片 
+            ? `<button onclick="sendCarPhotos(this)">📷 發送車照訊息</button>` 
+            : `<button disabled>❌ 無車照</button>`}
+          <button onclick="copyInfoFromCard(this)">📤 分享</button>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
 
     async function sendCarPhotos(btn) {
       const card = btn.closest('.card');
